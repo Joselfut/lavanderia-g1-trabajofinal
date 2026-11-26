@@ -3,3 +3,128 @@
    
    ========================================================= */
 
+/* Estilos básicos - Integrante 2 */
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f2f6fa;
+  color: #222222;
+}
+
+/* Encabezado y menú */
+header {
+  background-color: #155e9c;
+  color: white;
+  padding: 15px 20px;
+  text-align: center;
+}
+
+nav {
+  margin-top: 10px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Contenido principal */
+main {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 0 15px;
+}
+
+section {
+  background-color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+h2 {
+  color: #155e9c;
+  margin-top: 0;
+}
+
+/* Imágenes y video */
+.galeria {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.tarjeta {
+  flex: 1 1 250px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.tarjeta img,
+video {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+/* Formulario */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input,
+select,
+button {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #bbbbbb;
+  border-radius: 5px;
+}
+
+button {
+  background-color: #155e9c;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0e4370;
+}
+
+/* Pie de página */
+footer {
+  background-color: #155e9c;
+  color: white;
+  text-align: center;
+  padding: 15px;
+}
+
+/* Diseño para celulares (responsivo) */
+@media (max-width: 600px) {
+  header {
+    padding: 12px;
+  }
+
+  nav a {
+    display: block;
+    margin: 6px 0;
+  }
+
+  .galeria {
+    flex-direction: column;
+  }
+}
