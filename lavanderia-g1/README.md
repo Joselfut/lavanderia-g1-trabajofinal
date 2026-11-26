@@ -3,7 +3,7 @@
 ## Estructura de carpetas (Rutas Relativas)
 ```text
 lavanderia-g1/
-├── index.html          -> Estructura HTML (Integrante 1)
+├── index.html          -> Estructura HTML ( Jose Luis)
 ├── css/
 │   └── estilos.css     -> Estilos y diseño responsivo (Integrante 2)
 ├── js/
