@@ -1,97 +1,102 @@
-/* =========================================================
-  const formulario = document.getElementById("formulario");
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("form-reserva");
+  const servicioSelect = document.getElementById("servicio");
+  const cantidadInput = document.getElementById("cantidad");
+  const modalidadSelect = document.getElementById("modalidad");
+  const expressCheckbox = document.getElementById("express");
+  const totalEstimadoEl = document.getElementById("total-estimado");
+  const resultadoEl = document.getElementById("resultado-envio");
 
-const servicio = document.getElementById("servicio");
-const cantidad = document.getElementById("cantidad");
-const modalidad = document.getElementById("modalidad");
-const total = document.getElementById("total");
-const mensaje = document.getElementById("mensaje");
+  const menuToggle = document.getElementById("menu-toggle");
+  const navMenu = document.querySelector(".nav");
+  if (menuToggle && navMenu) {
+    menuToggle.addEventListener("click", () => {
+      navMenu.classList.toggle("active");
+    });
+  }
 
-// Tarifas de ejemplo en pesos dominicanos por libra o pieza.
-// Puedes cambiar estos precios según tu lavandería.
-const tarifas = {
-    lavado: 75,
-    secado: 50,
-    planchado: 60,
-    completo: 120,
-    especial: 150
-};
+  function calcularEstimado() {
+    const opcionServicio = servicioSelect.options[servicioSelect.selectedIndex];
+    const opcionModalidad = modalidadSelect.options[modalidadSelect.selectedIndex];
 
-// Calcular precio estimado
-function calcularPrecio() {
+    const precioBase = Number(opcionServicio?.dataset?.precio || 0);
+    const cantidad = Math.max(0, Number(cantidadInput.value || 0));
 
-    const tipo = servicio.value;
-    const unidades = Number(cantidad.value);
-
-    if (!tipo || unidades <= 0) {
-        total.textContent = "RD$ 0.00";
-        return;
+    if (precioBase <= 0 || cantidad <= 0) {
+      totalEstimadoEl.textContent = "RD$ 0";
+      return 0;
     }
 
-    const precio = tarifas[tipo] * unidades;
+    let subtotalServicio = precioBase * cantidad;
 
-    total.textContent = "RD$ " + precio.toFixed(2);
-}
-
-// Actualizar el precio al cambiar los datos
-servicio.addEventListener("change", calcularPrecio);
-cantidad.addEventListener("input", calcularPrecio);
-
-// Evitar fechas anteriores al día actual
-const fecha = document.getElementById("fecha");
-
-const hoy = new Date();
-const fechaLocal = new Date(
-    hoy.getTime() - hoy.getTimezoneOffset() * 60000
-).toISOString().split("T")[0];
-
-fecha.min = fechaLocal;
-
-// Guardar solicitud
-formulario.addEventListener("submit", function(e) {
-
-    e.preventDefault();
-
-    if (!formulario.checkValidity()) {
-        formulario.reportValidity();
-        return;
+    if (expressCheckbox && expressCheckbox.checked) {
+      subtotalServicio = subtotalServicio * 1.25;
     }
 
-    const datos = {
-        nombre: document.getElementById("nombre").value,
-        telefono: document.getElementById("telefono").value,
-        correo: document.getElementById("correo").value,
-        servicio: servicio.value,
-        cantidad: cantidad.value,
-        modalidad: modalidad.value,
-        fecha: fecha.value,
-        direccion: document.getElementById("direccion").value,
-        precioEstimado: total.textContent
-    };
+    const tarifaDomicilioBase = Number(opcionModalidad?.dataset?.domicilio || 0);
+    const costoDomicilio =
+      tarifaDomicilioBase > 0 && subtotalServicio < 500
+        ? tarifaDomicilioBase
+        : 0;
 
-    let solicitudes = JSON.parse(
-        localStorage.getItem("solicitudesLavanderia") || "[]"
-    );
+    const total = Math.round(subtotalServicio + costoDomicilio);
+    totalEstimadoEl.textContent = `RD$ ${total.toLocaleString("es-DO")}`;
+    return total;
+  }
 
-    solicitudes.push(datos);
+  function generarNumeroOrden() {
+    const numero = Math.floor(1000 + Math.random() * 9000);
+    return `G1-${numero}`;
+  }
 
-    localStorage.setItem(
-        "solicitudesLavanderia",
-        JSON.stringify(solicitudes)
-    );
+  [servicioSelect, cantidadInput, modalidadSelect, expressCheckbox].forEach((campo) => {
+    if (campo) {
+      campo.addEventListener("input", calcularEstimado);
+      campo.addEventListener("change", calcularEstimado);
+    }
+  });
 
-    mensaje.textContent =
-        "¡Solicitud registrada correctamente! Gracias por elegirnos.";
+  calcularEstimado();
 
-    formulario.reset();
-    total.textContent = "RD$ 0.00";
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
 
+      const nombre = document.getElementById("nombre").value.trim();
+      const telefono = document.getElementById("telefono").value.trim();
+      const correo =
+        document.getElementById("correo").value.trim() || "No especificado";
+      const servicioTexto =
+        servicioSelect.options[servicioSelect.selectedIndex]?.text || "";
+      const cantidad = Number(cantidadInput.value || 0);
+      const modalidadTexto = modalidadSelect.value;
+      const esExpress = expressCheckbox && expressCheckbox.checked ? "Sí (+25%)" : "No";
+      const fecha = document.getElementById("fecha").value;
+      const notas =
+        document.getElementById("notas").value.trim() || "Sin notas adicionales";
+
+      if (!nombre || !telefono || !servicioSelect.value || cantidad < 1 || !fecha) {
+        resultadoEl.className = "resultado-envio error";
+        resultadoEl.innerHTML =
+          "<strong>Por favor completa todos los campos obligatorios (*).</strong>";
+        return;
+      }
+
+      const total = calcularEstimado();
+      const orden = generarNumeroOrden();
+
+      resultadoEl.className = "resultado-envio exito";
+      resultadoEl.innerHTML = `
+        <p><strong>✓ ¡Solicitud registrada en Lavandería G1!</strong></p>
+        <p><strong>Número de Orden:</strong> ${orden}</p>
+        <p><strong>Cliente:</strong> ${nombre} (${telefono})</p>
+        <p><strong>Correo:</strong> ${correo}</p>
+        <p><strong>Servicio:</strong> ${servicioTexto} (${cantidad} unidades/libras)</p>
+        <p><strong>Express 24h:</strong> ${esExpress}</p>
+        <p><strong>Modalidad:</strong> ${modalidadTexto} — <strong>Fecha:</strong> ${fecha}</p>
+        <p><strong>Notas / Dirección:</strong> ${notas}</p>
+        <p><strong>Total Estimado:</strong> RD$ ${total.toLocaleString("es-DO")}</p>
+      `;
+    });
+  }
 });
-
-// Limpiar el mensaje al reiniciar
-formulario.addEventListener("reset", function() {
-    mensaje.textContent = "";
-    total.textContent = "RD$ 0.00";
-}); LAVANDERÍA G1 - LÓGICA E INTERACTIVIDAD (JavaScript)
-   ========================================================= */
-
