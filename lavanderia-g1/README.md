@@ -1,4 +1,5 @@
 # Lavandería G1 — Plantilla Base (Taller de Programación II)
+# Este es el trabajo del grupo 1 para la materia programacion II con el maestro MANUEL ANTONIO TITIN RINCON
 
  Distribucion del trabajo
 ```text
