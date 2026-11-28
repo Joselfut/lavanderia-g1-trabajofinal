@@ -1,6 +1,6 @@
 # Lavandería G1 — Plantilla Base (Taller de Programación II)
 
-## Estructura de carpetas (Rutas Relativas) y Distribucion del trabajo
+ Distribucion del trabajo
 ```text
 lavanderia-g1/
 ├── index.html          -> Estructura HTML ( Jose Luis)
